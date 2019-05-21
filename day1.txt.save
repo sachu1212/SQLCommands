@@ -1,0 +1,2 @@
+select name,count from (select name,count(*) as count from sales,products where sales.pid=products.pid group by name) where count=(select max(count) from(select name,count(*) as count from sales,products where sales.pid=products.pid group by name));
+
