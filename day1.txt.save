@@ -3,15 +3,15 @@ select name,count from (select name,count(*) as count from sales,products where 
 for most popular category:
 
 select category.description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by category.description order by count(*) desc;
-
+----------------------------
 for most popular subcategory:
 
 select subcategory.description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by subcategory.description order by count(*) desc;
-
+--------------------------------------------
 if you only want to show the top result (for category):
 
 select description from (select category.description as description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by category.description) where number_of_sales = (select max(number_of_sales) from (select category.description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by category.description));
-
+--------------------------------------
 
 created a first procedure
 
@@ -21,4 +21,60 @@ SQL> create or replace procedure FirstProcedure
   4  dbms_output.put_line('hello my friends');
   5  end;
   6* /
+------------------------------------------------
+
+SQL> create or replace procedure Addition
+  2  Is
+  3  A number(3);
+  4  B number(3);
+  5  C number(3);
+  6  Begin
+  7  A:=15;
+  8  B:=20;
+  9  C:= A+B;
+ 10  Dbms_output.put_line('the result is');
+ 11  Dbms_output.put_line(C);
+ 12  end;
+ 13* /
+Procedure ADDITION compiled
+
+SQL> call addition();
+the result is
+35
+-------------------------------------------------------
+SQL> create or replace procedure Add1 (A number,B number,C number)
+  Is
+  Result Number(3);
+  Begin
+  Result:=A+B+C;
+  Dbms_output.put_line('Result is'||Result);
+  end;
+  /
+Procedure ADD1 compiled
+
+SQL> call add1(8,9,10);
+Result is 27
+
+
+Call completed.
+
+-----------------------------------------------------
+SQL> create or replace procedure record(R number, N Char, M number)
+  Is
+  Begin
+  insert into school values(R,N,M);
+  end;
+  /
+
+Procedure RECORD compiled
+call Record(39,'Andy',99);
+------------------------------------------------------
+SQL> create or replace procedure CreateBankAccount(Name1 char, Address1 char, AccType char)is
+  begin
+  insert into bank2 values (( select upper(substr(AccType,1,1))||
+  upper(substr(Address1,1,1))||lpad(nvl(max(substr(accno,3,3))+1,1),3,'0') from bank2 where substr(accno,1,1)=upper(substr(AccType,1,1))),Name1,Address1);
+  end;
+  /
+
+
 
