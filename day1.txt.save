@@ -1,4 +1,24 @@
 select name,count from (select name,count(*) as count from sales,products where sales.pid=products.pid group by name) where count=(select max(count) from(select name,count(*) as count from sales,products where sales.pid=products.pid group by name));
 
-dfgdfgd
+for most popular category:
+
+select category.description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by category.description order by count(*) desc;
+
+for most popular subcategory:
+
+select subcategory.description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by subcategory.description order by count(*) desc;
+
+if you only want to show the top result (for category):
+
+select description from (select category.description as description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by category.description) where number_of_sales = (select max(number_of_sales) from (select category.description, count(*) as number_of_sales from category, subcategory, products, sales where category.cid=subcategory.cid and subcategory.sid=products.sid and products.pid=sales.pid group by category.description));
+
+
+created a first procedure
+
+SQL> create or replace procedure FirstProcedure
+  2  Is
+  3  begin
+  4  dbms_output.put_line('hello my friends');
+  5  end;
+  6* /
 
