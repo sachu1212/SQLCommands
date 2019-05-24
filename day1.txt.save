@@ -36,6 +36,7 @@ SQL> create or replace procedure Addition
  11  Dbms_output.put_line(C);
  12  end;
  13* /
+
 Procedure ADDITION compiled
 
 SQL> call addition();
@@ -75,6 +76,193 @@ SQL> create or replace procedure CreateBankAccount(Name1 char, Address1 char, Ac
   upper(substr(Address1,1,1))||lpad(nvl(max(substr(accno,3,3))+1,1),3,'0') from bank2 where substr(accno,1,1)=upper(substr(AccType,1,1))),Name1,Address1);
   end;
   /
+----------------------------------------------------------
+SQL> create or replace procedure Tesco_category(cate char)is
+  NewCID Number(3);
+  Begin
+  Select NVL(MAX(CID),0)+1 into NewCID from category;
+  insert into category values(NewCID,cate);
+  end;
+  /
+Procedure TESCO_CATEGORY compiled
+------------------------------------------------------
+
+SQL> create or replace procedure cate_entry(cat char,sub char)is
+Newcid Number(2);
+Newsid Number(3);
+Begin
+Select NVL(MAX(Cid),0) into Newcid from category where description=cat;
+If Newcid=0 Then
+select NVL(MAX(Cid),0)+1 into Newcid from category;
+insert into category values(Newcid,cat);
+End if;
+select NVL(Max(Sid),0)+1 into Newsid from subcategory;
+insert into subcategory values(Newcid,Newsid,sub);
+end;
+/
+Procedure CATE_ENTRY compiled
+
+SQL> call cate_entry('clothing','shirts');
+
+--------------------------------------------------------------------------
+SQL> create or replace procedure cate_entry(cat char,sub char)is
+Newcid Number(2);
+Newsid Number(3);
+Begin
+Select NVL(MAX(Cid),0) into Newcid from category where description=cat;
+If Newcid=0 Then
+select NVL(MAX(Cid),0)+1 into Newcid from category;
+insert into category values(Newcid,cat);
+End if;
+select NVL(Max(Sid),0)+10 into Newsid from subcategory where Cid=Newcid;
+insert into subcategory values(Newcid,Newsid,sub);
+end;
+/
+Procedure CATE_ENTRY compiled
+
+SQL> call cate_entry('clothing','shirts');
+
+-----------------------------------------------------------------------
+SQL> create or replace function Tax(S Number)
+  return number
+  is
+  Result Number(7,2);
+  Begin
+  Result:=S*21/100;
+  Return Result;
+  end;
+  /
+Function TAX compiled
+
+select First_name,salary,Tax(salary),salary-Tax(salary)from employees;
+
+--------------------------------------------------------
+SQL> create or replace function Tax2(S Number)
+ Return Number
+ Is
+ Result Number(7,2);
+ Begin
+ If S<=2500
+ then
+ Result:=0;
+ end if;
+ If S>2500 and S<=5000
+ then
+ Result:=S*15/100;
+ end if;
+ If S>5000
+ then
+ Result:=S*21/100;
+ end if;
+ return result;
+ end;
+ /
+
+select first_name,Dname(Department_id) from employees;
+---------------------------------------------------------
+create or replace function DName(D Number)
+ Return char
+ Is
+ DN departments.department_name%type;
+ Begin
+ Select Department_name into DN from departments
+ where department_id=D;
+ return DN;
+ end;
+ /
+select First_name,salary,tax2(salary) from employees;
+---------------------------------------------------------
+
+
+create or replace function Count_product(Cid_input Number)
+ return Number
+ Is
+ Result Number;
+ Begin
+ Select count(*) into result from Products, subcategory where Cid_input=Cid and subcategory.Sid=products.Sid;
+ return result;
+ end;
+  /
+
+select Description,Count_subcategory(Cid), Count_product(Cid) from category;
+
+----------------------------------------------------------
+create or replace trigger Delete_School
+  After delete on school
+  Declare
+  Begin
+  Dbms_output.put_line('I HATE YOU MY FRIEND');
+  end;
+  /
+------------------------------------------------
+ create or replace trigger Backup_school
+  before delete on school
+  for each row
+  Begin
+  insert into Backup_school values(:old.regno,:old.Name,:old.marks);
+  end;
+  /
+
+--------------------------------------------------
+
+create or replace trigger Insert_trig2
+  Before insert on School
+  For each row
+  Begin
+  If :New.Marks=58 or :New.Marks=59 Then
+  :New.Marks:=60;
+  End If;
+  :New.Name:=Upper(:New.Name);
+  End;
+ /
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
